@@ -1,5 +1,7 @@
 #include <Python.h>
 #include <iostream>
+#include <stdio.h>
+// sudo apt-get install python-dev  或者 sudo aptitude install python-dev
 
 using namespace std; 
 
@@ -14,45 +16,21 @@ void printDict(PyObject* obj) {
     }  
 } 
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-	Py_Initialize();
-	
-	if (!Py_IsInitialized())  
-        return -1;  
-    PyRun_SimpleString("import sys");  
-    PyRun_SimpleString("sys.path.append('./')"); 
+  Py_Initialize();
+  PyRun_SimpleString("import sys");
+  PyRun_SimpleString("sys.path.append('./')");
 
-    PyObject *sys = PyImport_ImportModule("sys");
-	PyObject *path = PyObject_GetAttrString(sys, "path");
-	PyList_Append(path, PyString_FromString("."));
+  PyObject *pModule = PyImport_ImportModule( "helloworld" );
 
-	// Convert the file name to a Python string.
-	PyObject *pName = PyUnicode_FromString("test");
+  // printDict( PyModule_GetDict(pModule) );
 
-	// Import the file as a Python module.
-	PyObject *pModule = PyImport_Import( pName );
-	if( !pModule ) {
-		cout << " Unable to load python module"  << endl; 
-		return 0; 
-	}
+  PyObject *pFunc = PyObject_GetAttrString(pModule, "say_hello_world");
+  
+  PyEval_CallObject(pFunc, NULL);
 
-	// Create a dictionary for the contents of the module.
-	PyObject *pDict = PyModule_GetDict(pModule);
-	if( !pDict ) {
-		cout << " Unable to load python pDict"  << endl; 
-		return 0; 
-	}
+  Py_Initialize();
 
-	PyObject *pFunc = PyDict_GetItemString(pDict, "test_func");
-	pFunc = PyDict_GetItemString(pDict, "square");
-	if( !pFunc ) {
-		printDict(pDict);
-		cout << " Unable to load python test_func"  << endl; 
-		return 0; 
-	}
-
-
-	Py_Finalize();
-	return 0;
+  return 0; 
 }
